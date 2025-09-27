@@ -1,5 +1,6 @@
 {$mode objfpc}
 {$h+}
+(* deal with crlf I hope *)
 Unit PtoPu;
 {
     This file is part of the Free Pascal run time library.
