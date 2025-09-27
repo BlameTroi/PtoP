@@ -17,6 +17,53 @@ Program PtoP;
 
  **********************************************************************}
 
+{ bug -- Every curly brace enclosed block comment that contains multiple
+         lines is gaining an extra blank line in front of it's opening
+         brace. This does not happen for the digraph form of comments,
+         nor for curly brace comments that fit on one line.
+
+         Some oddities:
+
+         - It's always a new line before.
+         - Prior lines of code have no effect.
+         - Indent level has no effect.
+         - Placing the opening brace on an otherwise empty line
+           inhibits this behavior. The location of the closing brace
+           doesn't matter.
+
+         These are defined as open and close comment in the config file
+         and the digraph form is defined differently. I'm testing the
+         removal of the differences.
+
+  bug -- When indenting try/finally/end, the end is mis-indented. It
+         aligns with the start of the block holding the try.
+
+         I see the keywords in ptopu, so it's not just that these are
+         not understood. Two ideas:
+
+         - Try finally end, and try except end, but you can not have
+           try except finally end (or finally except). Make sure the
+           code recognizes this. ... end misindents.
+
+         - A possible mistake in the configuration file.
+
+         Research: I would expect finally and except to behave in a
+         manner similar to else. The definitions are different:
+
+         finally=crbefore,dindent,inbytab,crafter,lower
+         else=crbefore,dindonkey,inbytab,lower
+         * Tested with and without changes to end.
+
+         The mssing crafter makes sense, but the dindonkey vs dindent
+         is worth looking at further.
+
+         Another idea is that [end]=.....try,finally,except... and maybe
+         it shouldn't include try? dunno. if,then,else are there.
+         * See above on finally/else
+         * alo tried adding keys for try, no joy.
+
+  enh -- Add support for using stdin and stdout so that ptop can be
+         invoked from Helix and similar editors. }
 
 Uses SysUtils,Classes,PtoPu,CustApp, bufstream;
 
@@ -132,6 +179,9 @@ begin
     begin
     writeln(Title+' '+Version);
     writeln(Copyright);
+    writeln('infile...: ', InFileName);
+    writeln('outfile..: ', OutFileName);
+    writeln('config...: ', ConfigFile);
     Writeln;
     end;
   If (Length(InfileName)=0) or (Length(OutFileName)=0) Then
