@@ -497,8 +497,9 @@ begin
                                           gobsym, crafter];
     option[t,becomes]^.selected         := [capital,spbef, spaft, gobsym];
     option[t,Delphicomment]^.Selected   := [crafter];
-    option[t,opencomment]^.selected     := [capital,crsupp];
-    option[t,closecomment]^.selected    := [capital,crsupp];
+    { commented these out, there is no corresponding default for dopen and dclose. }
+    // option[t,opencomment]^.selected     := [capital,crsupp];
+    // option[t,closecomment]^.selected    := [capital,crsupp];
     option[t,semicolon]^.selected       := [capital,crsupp, dindonkey, crafter];
     option[t,colon]^.selected           := [capital,inbytab];
     option[t,equals]^.selected          := [capital,spbef, spaft, inbytab];
