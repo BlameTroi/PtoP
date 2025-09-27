@@ -1,0 +1,97 @@
+#!/bin/bash
+#
+# pformat -- a bash script wrapper around the `ptop` pascal to print
+# formatter utility as installed via Free Pascal `FPC 3.2.2+`.
+#
+# bugs/issues: `pformat` is not particularly safe or secure.
+#
+# - damage to original source file: the original file is copied to
+#   a backup file which is reformatted over the top of the original
+#   file. No meaningful error checks are done. The name of the backup
+#   is . + filename + ".pformat.bak".
+
+
+# save these for debugging.
+cmd=$0
+orig=$@
+
+
+# Default argument values:
+
+# -i or --indent
+indent=2
+
+# -l or --width
+width=120
+
+# -c or --config
+config=ptop.cfg
+
+
+# Display help:
+function usage() {
+  echo $cmd
+  echo
+  echo "Formats Pascal source code (pretty prints) using
+the ptop utility from FreePascal 3.2.2+.
+
+[(-i | --indent) 3]            spaces per indent
+[(-l | --width) 120]           width of a source line
+[(-c | --config) ~/.ptop.cfg]  ptop configuration file
+[(-f | --file) filename]       *file to format
+
+* -f/--file may be omitted and the filename is assumed to
+  be the tail of the arguments
+"
+#  exit
+}
+
+
+# Parse the command line.
+while [[ -n $1 ]]; do
+  case $1 in 
+       -l | --width )   shift
+                        width=$1 ;;
+       -f | --file )    shift
+                        filename=$1 ;;
+       -i | --indent )  shift
+                        indent=$1 ;;
+       -c | --config )  shift
+                        config=$1 ;;
+       -h | --help )    usage
+                        exit 0 ;;
+       * )              filename=$1
+                        shift ;;
+  esac
+  shift
+done
+
+
+# The arguments have been parsed.
+
+
+# Check that an input file was specified and that it is usable.
+if ! [[ -n $filename ]]; then
+  echo ERROR: no file provided!
+  usage
+  exit 1
+fi
+if ! [[ -w $filename ]]; then
+  echo ERROR: file $filename does not exist or can not be written!
+  usage
+  exit 1
+fi
+
+
+# Make the temporary/backup file.
+tempname='.'
+tempname+=$filename
+tempname+='.pformat.bak'
+cp $filename $tempname
+
+
+# And run the formatter.
+# /opt/homebrew/bin/ptop -i $indent -l $width -c $config $tempname $filename
+echo testing: $indent $width $config 
+../bin/ptop -i $indent -l $width -c $config -v $tempname $filename
+exit $?
