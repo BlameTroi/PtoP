@@ -81,11 +81,6 @@ a three line with nothing else on the brace lines ...
   (* double checking the BNF, those aren't compound statements between *)
   (* Try/Finally and Finally/End. It's a statement list which is an awful *)
   (* inconsistency, but is this the cause of the issue? *)
-  (* *)
-  (* not quite. while the begin/end are not required, their presence doesn't *)
-  (* matter. from my skim of the code, there's a stack of some sort that *)
-  (* might be at issue here. maybe the try and finally aren't put on the stack *)
-  (* correctly and the unwind for the end fails? *)
   Try
       writeln('blarg');
       writeln('blarg');
