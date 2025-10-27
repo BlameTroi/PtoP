@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-`PtoP` is a Pascal source beautifier predating Tree Sitter and Language Server Protocol. While many Language Servers provide code formatting, I plan to stick with `PtoP`. It's late 2025 and Language Server support for Pascal is weak and fragmented; I see a few incomplete repos on GitHub that aren't very active and appear to be forks of each other. I've never written an LSP and I don't have an urge to do so (yet).
+`PtoP` is a Pascal source beautifier predating Tree Sitter and Language Server Protocol. While many Language Servers provide code formatting, I plan to stick with `PtoP`. It's now late 2025 and Language Server support for Pascal is weak and fragmented; I see a few incomplete repos on GitHub that aren't very active and appear to be forks of each other. I've never written an LSP and I don't have an urge to do so (yet).
 
 `PtoP` appears to be complete but it wasn't written to be integrated into an editor and I have found a few bugs in my testing. This project will address those issues.
 
@@ -18,24 +18,41 @@ These are wordy, but I've included my testing notes as I've analyzed them.
 
 2. Allow blocks of code to be protected from formatting by use of in source markers (as `clangfmt` does).
 
+3. Support keywords `Break`, `Continue`, `Return`.
+
+4. Some standard functions don't honor capitalization, notably `writeln` and `readln`.
+
 ### Bugs
 
-1. Comment blocks delimited by braces {} sometimes format incorrectly.
+1. Options `lower`, `upper`, and `capital` do not apply consistently. The only way I can get operators like `MOD` or `DIV` to completely upper case is to change everything to `upper`. If I use my preferred `capital` for keywords and specify `upper` for operators I get `capital` behavior.
 
-   1. Multi-line blocks with comment text on the same line as the open brace get an extra leading blank line. Subsequent runs continue to add more and more blank lines. This does not occur on single line block comments, nor on multi-line blocks where the only thing on the first line is the open brace.
+2. Indenting of if/else if/end is wrong under the else if, it looks to me as if the indbytab for the else and if are applied:
 
-   2. In at least one instance I see a multi-line brace block comment losing its indent.
+   ```pascal
+   if a then
+      something
+   else if b then
+         another thing
+   ```
 
-   Some notes and observations:
+   The dindent is correct after this, so there's no creeping to the right.
 
-   - It's always a newline before.
-   - Prior lines of code have no effect.
-   - Indent level has no effect.
-   - Placing the opening brace on an otherwise empty line inhibits this behavior. The location of the closing brace doesn't matter.
+3. Case block labels are not indenting the way I think they should. They should be one indent, and any code under each label should be indented one more level.
 
-The "double" comment, (* *) instead of { } works correctly but other than a minor difference in the configuration that did not seem to fix anything in testing. The code for all three types of comments, single block {}, double block (* *), and Delphi style line comments '//' follows different path, but they all look the same to me.
+   ```pascal
+   case a of
+      1:
+      something;
+      2:
+      begin
+         another thing;
+      end;
+      else
+        but this is correct;
+   end;
+   ```
 
-2. Indenting of Try/Finally and Try/Except appears to be broken, but I might misunderstand the syntax.
+4. Indenting of Try/Finally and Try/Except appears to be broken, but I might misunderstand the syntax.
 
    A block of Try/Finally/End over outdents (deindent is how the code refers to it). So:
 
@@ -74,7 +91,7 @@ The "double" comment, (* *) instead of { } works correctly but other than a mino
    else=crbefore,dindonkey,inbytab,lower
    * Tested with and without changes to end.
 
-   The mssing crafter makes sense, but the dindonkey vs dindent
+   The missing crafter makes sense, but the dindonkey vs dindent
    is worth looking at further.
 
    Another idea is that [end]=.....try,finally,except... and maybe

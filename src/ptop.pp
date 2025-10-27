@@ -172,8 +172,10 @@ Procedure TPToP.DoRun;
 Var
   F,InS,OutS,cfgS : TSTream;
   PPrinter : TPrettyPrinter;
-
+  x: String;
 begin
+  writeln(stderr, 'pausing...');
+  readln(input, x);
   ProcessOpts;
   if BeVerbose then
     begin
@@ -230,7 +232,11 @@ begin
   Terminate;
 end;
 
+var x: string;
+
 begin
+  writeln(stderr, 'here');
+  readln(input, x);
   With TPToP.Create(Nil) do
     Try
       Title:= ATitle;
